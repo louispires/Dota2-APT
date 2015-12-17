@@ -79,6 +79,7 @@ namespace NeXt.APT.Patchnotes
             var lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
             Hero hero = null;
+            Hero CurrentHero = null;
 
             foreach (var line in lines)
             {
@@ -97,28 +98,29 @@ namespace NeXt.APT.Patchnotes
                         if (h.MatchesName(l))
                         {
                             hero = h;
+                            CurrentHero = hero;
                             break;
                         }
                     }
 
-                    if (hero == null)
+                    if (hero == null && CurrentHero == null)
                     {
                         DoHeroNotFound(l);
                     }
                     else
                     {
-                        DoHeroChanged(hero);
+                        DoHeroChanged(CurrentHero);
                     }
-                    continue;
+                    //continue;
                 }
 
-                if (hero == null)
+                if (CurrentHero == null)
                 {
                     DoMatchingHeroNotFound(l);
                     continue;
                 }
 
-                var abilities = hero.MatchingAbilities(l);
+                var abilities = CurrentHero.MatchingAbilities(l);
 
                 if (abilities.Length > 1)
                 {
@@ -127,20 +129,20 @@ namespace NeXt.APT.Patchnotes
                         DoAbilityChangeReady(ability, l);
                     }
                 }
-                else if (abilities.Length == 1)
-                {
-                    var ability = abilities[0];
-                    if (!ability.IsMinor  && l.IndexOf(ability.DisplayName, StringComparison.OrdinalIgnoreCase) == 0)
-                    {
-                        l = l.Remove(0, ability.DisplayName.Length).TrimStart();
-                    }
-
-                    DoAbilityChangeReady(ability, l);
-                }
                 else
-                {
-                    DoAbilityNotFound(l);
-                }
+                    if (abilities.Length == 1)
+                    {
+                        var ability = abilities[0];
+                        if (!ability.IsMinor && l.IndexOf(ability.DisplayName, StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            l = l.Remove(0, ability.DisplayName.Length).TrimStart();
+                        }
+                        DoAbilityChangeReady(ability, l);
+                    }
+                    else
+                    {
+                        DoAbilityNotFound(l);
+                    }
 
             }
         }
@@ -176,7 +178,7 @@ namespace NeXt.APT.Patchnotes
                     {
                         DoItemNotFound(l);
                     }
-                    continue;
+                    //continue;
                 }
 
                 if (item == null)
@@ -186,10 +188,11 @@ namespace NeXt.APT.Patchnotes
                 }
 
                 int index;
-                if ( (index = l.IndexOf(item.DisplayName, StringComparison.OrdinalIgnoreCase)) == 0)
+                if ((index = l.IndexOf(item.DisplayName, StringComparison.OrdinalIgnoreCase)) == 0)
                 {
                     var i2 = l.IndexOf(' ', index + item.DisplayName.Length);
-                    l = l.Remove(0, i2).TrimStart();
+                    if (i2 != -1)
+                        l = l.Remove(0, i2).TrimStart();
                 }
 
                 DoItemChangeReady(item, l);

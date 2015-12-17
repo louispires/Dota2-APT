@@ -17,6 +17,7 @@
 
         <!--Row: 0 Column: 0-->
         <TextBox x:Name="heroPatchText" Text="Paste hero changes here" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+        
         <TreeView x:Name="heroTV" Visibility="Collapsed"/>
         <!--Row: 0 Column: 2-->
         <TextBox x:Name="itemPatchText" Text="Paste item changes here" Grid.Column="2" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>

@@ -26,6 +26,11 @@ namespace NeXt.APT.NameTranslator
 
         public bool MatchesName(string text)
         {
+            if (displayName.Contains('('))
+                displayName = displayName.Substring(0, displayName.IndexOf('(') - 1);
+            if (displayName.Contains(':'))
+                displayName = displayName.Substring(0, displayName.IndexOf(':'));
+
             return text.IndexOf(displayName, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
@@ -939,6 +944,13 @@ namespace NeXt.APT.NameTranslator
             hero.abilities.Add(new Ability("Splinter Blast", "winter_wyvern_splinter_blast"));
             hero.abilities.Add(new Ability("Cold Embrace", "winter_wyvern_cold_embrace"));
             hero.abilities.Add(new Ability("Winter's Curse", "winter_wyvern_winters_curse"));
+            list.Add(hero);
+            //Arc Warden
+            hero = new Hero("Arc Warden", "arc_warden");
+            hero.abilities.Add(new Ability("Flux", "arc_warden_flux"));
+            hero.abilities.Add(new Ability("Magnetic Field", "arc_warden_magnetic_field"));
+            hero.abilities.Add(new Ability("Spark Wraith", "arc_warden_spark_wraith"));
+            hero.abilities.Add(new Ability("Tempest Double", "arc_warden_tempest_double"));
             list.Add(hero);
 
             return list;

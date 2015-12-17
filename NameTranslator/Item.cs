@@ -325,6 +325,14 @@ namespace NeXt.APT.NameTranslator
             list.Add(new Item("Ring of Aquila", "DOTA_Tooltip_ability_item_ring_of_aquila"));
             //Shadow Amulet
             list.Add(new Item("Shadow Amulet", "DOTA_Tooltip_ability_item_shadow_amulet"));
+            //Faerie Fire 
+            list.Add(new Item("Faerie Fire", "DOTA_Tooltip_ability_item_faerie_fire"));
+            //Dragon Lance
+            list.Add(new Item("Dragon Lance", "DOTA_Tooltip_ability_item_dragon_lance"));
+            //Aether Lens
+            list.Add(new Item("Aether Lens", "DOTA_Tooltip_ability_item_aether_lens"));
+            //Iron Talon
+            list.Add(new Item("Iron Talon", "DOTA_Tooltip_ability_item_iron_talon"));
             return list;
         }
     }

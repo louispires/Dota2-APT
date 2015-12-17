@@ -103,7 +103,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NeXt.VDFParser\NeXt.Vdf.csproj">
+    <ProjectReference Include="..\nextvdf\NeXt.Vdf.csproj">
       <Project>{e4eda8b8-006c-4d41-822f-f64b6db0021f}</Project>
       <Name>NeXt.Vdf</Name>
     </ProjectReference>

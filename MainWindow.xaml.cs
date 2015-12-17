@@ -23,9 +23,8 @@ namespace NeXt.APT
     {
         private class HeroTVItem : TreeViewItem
         {
-
-            
-            public HeroTVItem(Hero hero) : base()
+            public HeroTVItem(Hero hero)
+                : base()
             {
                 Hero = hero;
                 Header = hero.DisplayName;
@@ -35,7 +34,8 @@ namespace NeXt.APT
         }
         private class AbilityTVItem : TreeViewItem
         {
-            public AbilityTVItem(Ability ability) : base()
+            public AbilityTVItem(Ability ability)
+                : base()
             {
                 Ability = ability;
                 Header = ability.DisplayName;
@@ -45,7 +45,8 @@ namespace NeXt.APT
         }
         private class ItemTVItem : TreeViewItem
         {
-            public ItemTVItem(Item item) : base()
+            public ItemTVItem(Item item)
+                : base()
             {
                 Item = item;
                 Header = item.DisplayName;
@@ -77,7 +78,7 @@ namespace NeXt.APT
 
             void TextTVItem_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
             {
-                if(IsSelected)
+                if (IsSelected)
                 {
                     IsEditable = true;
                 }
@@ -85,12 +86,12 @@ namespace NeXt.APT
 
             void tb_KeyDown(object sender, KeyEventArgs e)
             {
-                if(e.Key == Key.Return)
+                if (e.Key == Key.Return)
                 {
                     IsEditable = false;
                 }
             }
-            
+
             void this_MouseDoubleClick(object sender, MouseButtonEventArgs e)
             {
                 this.IsEditable = true;
@@ -125,7 +126,7 @@ namespace NeXt.APT
                 {
                     return tb.Text;
                 }
-            
+
             }
         }
 
@@ -133,7 +134,8 @@ namespace NeXt.APT
         public MainWindow()
         {
             InitializeComponent();
-            dotaLangfile = System.IO.Path.Combine(Steam.Locator.Dota2Folder, "dota", "resource", "dota_english.txt");
+            //C:\Program Files (x86)\Steam\SteamApps\common\dota 2 beta\game\dota\resource
+            dotaLangfile = System.IO.Path.Combine(Steam.Locator.Dota2Folder, "game", "dota", "resource", "dota_english.txt");
             langfiletxt.Text = dotaLangfile;
         }
 
@@ -145,7 +147,7 @@ namespace NeXt.APT
             {
                 return;
             }
-            if(string.IsNullOrEmpty(itemRaw))
+            if (string.IsNullOrEmpty(itemRaw))
             {
                 return;
             }
@@ -160,7 +162,7 @@ namespace NeXt.APT
             tl.ItemChangeReady += tl_ItemChangeReady;
             tl.ItemNotFound += tl_ItemNotFound;
             tl.MatchingItemNotFound += tl_MatchingItemNotFound;
-            
+
             tl.TranslateRawHeroes(heroRaw);
             tl.TranslateRawItems(itemRaw);
 
@@ -195,7 +197,7 @@ namespace NeXt.APT
             {
                 currentItemElement = new ItemTVItem(e.Item);
             }
-            else if(currentItemElement.Item != e.Item)
+            else if (currentItemElement.Item != e.Item)
             {
                 itemTV.Items.Add(currentItemElement);
                 currentItemElement = new ItemTVItem(e.Item);
@@ -224,7 +226,7 @@ namespace NeXt.APT
 
         void tl_AbilityChangeReady(object sender, AbilityChangeReadyEventArgs e)
         {
-            if(currentAbilityItem == null)
+            if (currentAbilityItem == null)
             {
                 currentAbilityItem = new AbilityTVItem(e.Ability);
             }
@@ -242,12 +244,19 @@ namespace NeXt.APT
                     }
                 }
             }
-            currentAbilityItem.Items.Add(new TextTVItem(e.Text));
+
+            if (currentAbilityItem.Items.Count == 0)
+            {
+                currentAbilityItem.Items.Add(new TextTVItem("-----------------"));
+                currentAbilityItem.Items.Add(new TextTVItem("Changes in 6.86:"));
+            }
+
+            currentAbilityItem.Items.Add(new TextTVItem("- " + e.Text));
         }
 
         void tl_HeroChanged(object sender, HeroChangedEventArgs e)
         {
-            if(currentHeroItem == null)
+            if (currentHeroItem == null)
             {
                 currentHeroItem = new HeroTVItem(e.Hero);
             }
@@ -261,26 +270,28 @@ namespace NeXt.APT
         {
             var builder = new AlterationDataBuilder();
 
-            foreach(HeroTVItem hero in heroTV.Items)
-            {
-                foreach(AbilityTVItem item in hero.Items)
+            if (heroTV.Items != null)
+                foreach (HeroTVItem hero in heroTV.Items)
                 {
-                    builder.AddAbility(item.Ability.InternalIdentifier);
-                    foreach(TextTVItem txt in item.Items)
+                    foreach (AbilityTVItem item in hero.Items)
+                    {
+                        builder.AddAbility(item.Ability.InternalIdentifier);
+                        foreach (TextTVItem txt in item.Items)
+                        {
+                            builder.Append(txt.Text);
+                        }
+                    }
+                }
+
+            if (itemTV.Items != null && itemTV.Items.Count > 1)
+                foreach (ItemTVItem itm in itemTV.Items)
+                {
+                    builder.AddItem(itm.Item.InternalIdentifier);
+                    foreach (TextTVItem txt in itm.Items)
                     {
                         builder.Append(txt.Text);
                     }
                 }
-            }
-
-            foreach(ItemTVItem itm in itemTV.Items)
-            {
-                builder.AddItem(itm.Item.InternalIdentifier);
-                foreach(TextTVItem txt in itm.Items)
-                {
-                    builder.Append(txt.Text);
-                }
-            }
 
             var data = builder.Build();
 
@@ -297,9 +308,9 @@ namespace NeXt.APT
 
             bool header = true;
             changesPreview.Items.Clear();
-            foreach(var val in changelist)
+            foreach (var val in changelist)
             {
-                if(val == null)
+                if (val == null)
                 {
                     header = true;
                     changesPreview.Items.Add
@@ -309,7 +320,7 @@ namespace NeXt.APT
                     continue;
                 }
 
-                if(header)
+                if (header)
                 {
                     changesPreview.Items.Add(
                         new ListBoxItem()
@@ -357,7 +368,7 @@ namespace NeXt.APT
             }
             else
             {
-                if(changelist.Count != 0)
+                if (changelist.Count != 0)
                 {
                     changelist.Add(null);
                 }
@@ -372,14 +383,14 @@ namespace NeXt.APT
             dlg.Title = "Save backup file to:";
             dlg.FileName = "dota_english.txt";
             dlg.DefaultExt = ".txt";
-            dlg.Filter = "Text Files (.txt)|*.txt"; 
+            dlg.Filter = "Text Files (.txt)|*.txt";
 
-            if(dlg.ShowDialog() == true)
+            if (dlg.ShowDialog() == true)
             {
                 var doChange = false;
                 try
                 {
-                    System.IO.File.Copy(dotaLangfile, dlg.FileName);
+                    System.IO.File.Copy(dotaLangfile, dlg.FileName, true);
                     doChange = true;
 
                 }
@@ -390,7 +401,7 @@ namespace NeXt.APT
                     var serial = new VdfSerializer(fullfile);
                     serial.Serialize(dotaLangfile);
 
-                    MessageBox.Show("Successfully added patchnotes to your game, hold the Alt key while hovering over an ability or item to show them", "Done", MessageBoxButton.OK, MessageBoxImage.None);
+                    MessageBox.Show("Successfully added patch notes to your game, hold the Alt key while hovering over an ability or item to show them", "Done", MessageBoxButton.OK, MessageBoxImage.None);
                 }
                 else
                 {

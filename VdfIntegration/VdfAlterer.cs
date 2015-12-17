@@ -27,60 +27,70 @@ namespace NeXt.APT.VdfIntegration
 
         public void Apply()
         {
-
-            foreach(var change in data.HeroChanges.Concat(data.ItemChanges))
+            foreach (var change in data.HeroChanges.Concat(data.ItemChanges))
             {
-                foreach(var text in change.Texts)
+                foreach (var text in change.Texts)
                 {
-                    int i = 0;
-                    while(table.ContainsName(string.Concat(change.BaseName, "_Note", i)))
+                    try
                     {
-                        i++;
-                    }
-
-                    VdfValue prepender = null;
-                    VdfValue appender = null;
-                    if(i > 0)
-                    {
-                        prepender = table.GetByName(string.Concat(change.BaseName, "_Note", i - 1));
-                    }
-                    else
-                    {
-                        prepender = table.GetByName(string.Concat(change.BaseName, "_Description"));
-                    }
-                    if(prepender == null)
-                    {
-                        prepender = table.GetByName(string.Concat(change.BaseName, "_Lore"));
-                    }
-                    if(prepender == null)
-                    {
-                        table.Traverse(
-                            delegate(VdfValue v)
+                        bool EmptyChange = change.Texts.Contains("- ");
+                        if (!EmptyChange)
+                        {
+                            int i = 0;
+                            while (table.ContainsName(string.Concat(change.BaseName, "_Note", i)))
                             {
-                                if(v.Name.IndexOf(change.BaseName) >= 0)
-                                {
-                                    prepender = v;
-                                }
-                                return true;
+                                i++;
                             }
-                        );
-                    }
 
-                    if(prepender == null)
+                            VdfValue prepender = null;
+                            VdfValue appender = null;
+                            if (i > 0)
+                            {
+                                prepender = table.GetByName(string.Concat(change.BaseName, "_Note", i - 1));
+                            }
+                            else
+                            {
+                                prepender = table.GetByName(string.Concat(change.BaseName, "_Description"));
+                            }
+                            if (prepender == null)
+                            {
+                                prepender = table.GetByName(string.Concat(change.BaseName, "_Lore"));
+                            }
+                            if (prepender == null)
+                            {
+                                table.Traverse(
+                                    delegate(VdfValue v)
+                                    {
+                                        if (v.Name.IndexOf(change.BaseName) >= 0)
+                                        {
+                                            prepender = v;
+                                        }
+                                        return true;
+                                    }
+                                );
+                            }
+
+                            if (prepender == null)
+                            {
+                                throw new Exception("this should never happen");
+                            }
+
+                            var idx = table.IndexOf(prepender);
+                            if (idx < table.Count - 1)
+                            {
+                                appender = table[idx + 1];
+                            }
+
+                            var newval = new VdfString(string.Concat(change.BaseName, "_Note", i), "<font color='#00ccff'>" + text + "</font>");
+
+                            table.InsertAfter(prepender, newval);
+                            OnAlterationMade(prepender, newval, appender);
+                        }
+                    }
+                    catch (Exception)
                     {
-                        throw new Exception("this should never happen");
+
                     }
-
-                    var idx = table.IndexOf(prepender);
-                    if(idx < table.Count - 1)
-                    {
-                        appender = table[idx + 1];
-                    }
-
-                    var newval = new VdfString(string.Concat(change.BaseName, "_Note", i), "<font color='#669999'>"+text+"</font>");
-
-                    table.InsertAfter(prepender, newval);
-                    OnAlterationMade(prepender, newval, appender);
                 }
             }
         }
